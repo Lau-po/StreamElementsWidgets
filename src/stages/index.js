@@ -3,7 +3,11 @@ const LOCALE = 'fr-FR'
 window.addEventListener('onWidgetLoad', async (obj) => {
   const status = await SE_API.getOverlayStatus();
   const fieldData = obj.detail.fieldData;
+
   const projectId = fieldData["projectNumericalId"];
+  const percentageMode = fieldData["percentageMode"];
+  const refreshInterval = fieldData["refreshInterval"] * 1000 || 10000;
+  const suffix = fieldData["usedSuffix"] ? fieldData["currency"] : fieldData["presaleSuffix"];
 
   if (!projectId) {
     console.error(`[/v1/projects/] Expected a valid project ID, got ${projectId} instead`);
@@ -16,8 +20,8 @@ window.addEventListener('onWidgetLoad', async (obj) => {
 
   let amount;
   let currentStage;
+  let previousStage;
   const url = `https://api.ulule.com/v1/projects/${projectId}?extra_fields=stages`;
-  const refreshInterval = fieldData["refreshInterval"] * 1000 || 10000;
 
   fetchStats();
   setInterval(async () => {
@@ -42,21 +46,26 @@ window.addEventListener('onWidgetLoad', async (obj) => {
         return;
       }
 
-      if (!stages) {
-        let foundCurrentStage = stages.find(element => {
-          return element.status == "ongoing";
+      if (stages) {
+        stages.forEach((element, index) => {
+          if (element.status == "ongoing") {
+            if(percentageMode && index > 0){
+              previousStage = stages[index-1];
+            }
+            currentStage = element;
+            console.log(previousStage);
+            console.log(currentStage);
+          }
         });
-        if (!foundCurrentStage) {
+        if (!currentStage) {
           $('.stages-amount').html(`<div>Project has no ongoing stage</div>`);
           return;
         }
-        currentStage = foundCurrentStage;
+        
       } else {
         $('.stages-amount').html(`<div>Project has no stages</div>`);
         return;
       }
-
-      const suffix = fieldData["usedSuffix"] ? fieldData["currency"] : fieldData["presaleSuffix"];
 
       $({ amount: amount }).animate({ amount: committed }, {
         duration: 3000,
@@ -64,12 +73,18 @@ window.addEventListener('onWidgetLoad', async (obj) => {
         step: function () {
           const goalElement = goal > 0 ? `<span class="stages-amount__goal"> / ${currentStage.goal.toLocaleString(LOCALE)} ${suffix}<span></div>` : '';
           $('.stages-amount').html(`<div>${Math.round(this.amount).toLocaleString(LOCALE)} ${goalElement}`);
+          $('.stages-title').html(`<div>${currentStage.title.fr}`);
         }
       });
       amount = committed;
 
       if (goal > 0) {
-        const progress = Math.floor(committed / currentStage.goal * 100);
+        let progress;
+        if(percentageMode && previousStage){
+          progress =Math.floor((committed-previousStage.goal) / (currentStage.goal-previousStage.goal) * 100);
+        } else {
+          progress =Math.floor(committed / currentStage.goal * 100);
+        }
         $(".stages-progress-bar").show();
         $(".stages-progress-bar__content").animate({
           width: `${progress > 100 ? 100 : progress}%`,

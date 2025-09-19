@@ -9,7 +9,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.stages-amount {
+.stages-amount, .stages-title {
   margin: 20px 20px 8px;
 }
 
