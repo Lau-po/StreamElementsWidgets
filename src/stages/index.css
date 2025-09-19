@@ -9,15 +9,15 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.amount {
+.stages-amount {
   margin: 20px 20px 8px;
 }
 
-.amount__goal {
+.stages-amount__goal {
   font-size: calc({{fontSize}}px - {{fontSize}}px * 0.4);
 }
 
-.progress-bar {
+.stages-progress-bar {
   background-color: {{progressBackgroundColor}};
   border: 1px solid {{progressBorderColor}};
   border-radius: {{progressBorderRadius}}px;
@@ -28,7 +28,7 @@
   position: relative;
 }
 
-.progress-bar .progress-bar__content {
+.stages-progress-bar .stages-progress-bar__content {
   background-color: {{progressBarColor}};
   color: {{progressBarFontColor}};
   display: block;
@@ -39,7 +39,7 @@
   width: 0;
 }
 
-.progress-bar .progress-bar__content::after {
+.stages-progress-bar .progress-bar__content::after {
   content: '';
   display: inline;
   padding: 4px;
