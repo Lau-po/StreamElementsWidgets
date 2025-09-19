@@ -50,7 +50,7 @@ window.addEventListener('onWidgetLoad', async (obj) => {
           $('.stages-amount').html(`<div>Project has no ongoing stage</div>`);
           return;
         }
-        currentStage = foundCurrentStage[0];
+        currentStage = foundCurrentStage;
       } else {
         $('.stages-amount').html(`<div>Project has no stages</div>`);
         return;
