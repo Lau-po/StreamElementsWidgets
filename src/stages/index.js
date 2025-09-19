@@ -11,7 +11,7 @@ window.addEventListener('onWidgetLoad', async (obj) => {
     }
     return
   };
-  console.log('[ulule/stats] Widget loaded for project', projectId);
+  console.log('[/v1/projects/] Widget loaded for project', projectId);
 
   let amount;
   let currentStage;
