@@ -3,9 +3,10 @@ const LOCALE = 'fr-FR'
 window.addEventListener('onWidgetLoad', async (obj) => {
   const status = await SE_API.getOverlayStatus();
   const fieldData = obj.detail.fieldData;
+  const projectId = fieldData["projectNumericalId"];
 
   if (!projectId) {
-    console.error(`[/v1/projects/] Expected a valid project ID, got ${fieldData["projectNumericalId"]} instead`);
+    console.error(`[/v1/projects/] Expected a valid project ID, got ${projectId} instead`);
     if (status.isEditorMode) {
       $('.stages-amount').html(`<div>Please input a valid project ID</div>`);
     }
@@ -15,7 +16,7 @@ window.addEventListener('onWidgetLoad', async (obj) => {
 
   let amount;
   let currentStage;
-  const url = `https://api.ulule.com/v1/projects/${fieldData["projectNumericalId"]}?extra_fields=stages`;
+  const url = `https://api.ulule.com/v1/projects/${projectId}?extra_fields=stages`;
   const refreshInterval = fieldData["refreshInterval"] * 1000 || 10000;
 
   fetchStats();
@@ -27,7 +28,7 @@ window.addEventListener('onWidgetLoad', async (obj) => {
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error(`[v1/projects/${fieldData["projectNumericalId"]}?extra_fields=stages] Response status: ${response.status}`);
+        throw new Error(`[v1/projects/${projectId}?extra_fields=stages] Response status: ${response.status}`);
       }
       const {
         stages,
@@ -76,7 +77,7 @@ window.addEventListener('onWidgetLoad', async (obj) => {
         $(".stages-progress-bar__content").text(`${progress}%`);
       }
     } catch (error) {
-      console.error(`[v1/projects/${fieldData["projectNumericalId"]}?extra_fields=stages] Failed to fetch project`, error.message);
+      console.error(`[v1/projects/${projectId}?extra_fields=stages] Failed to fetch project`, error.message);
     }
   }
 });
